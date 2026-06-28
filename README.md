@@ -1,46 +1,46 @@
 # Distillation ResNet50 -> ResNet18 sur CIFAR-100
 
-Ce projet entraine un modele **ResNet-50 teacher** sur CIFAR-100, puis distille
-ses connaissances vers un **ResNet-18 student**. Il contient les experiences
-baseline et plusieurs methodes de distillation :
+Ce projet entraîne un modèle **ResNet-50 teacher** sur CIFAR-100, puis distille
+ses connaissances vers un **ResNet-18 student**. Il contient les expériences
+baseline et plusieurs méthodes de distillation :
 
 - Student baseline sans distillation
-- Knowledge Distillation classique, notee **KD**
-- Attention Transfer, notee **AT**
-- FitNet avec etape de hint training puis KD
-- Decoupled Knowledge Distillation, notee **DKD**
+- Knowledge Distillation classique, notée **KD**
+- Attention Transfer, notée **AT**
+- FitNet avec étape de *hint training* puis KD
+- Decoupled Knowledge Distillation, notée **DKD**
 
-Les commandes ci-dessous reprennent les journaux d'execution conserves dans
-`save/*.txt`. Le dossier `save/` est ignore par Git parce qu'il contient les
-checkpoints, logs, resultats de recherche et sorties Weights & Biases.
+Les commandes ci-dessous reprennent les journaux d'exécution conservés dans
+`save/*.txt`. Le dossier `save/` est ignoré par Git parce qu'il contient les
+checkpoints, logs, résultats de recherche et sorties Weights & Biases.
 
-## Structure Du Projet
+## Structure du projet
 
 ```text
-config.py              Valeurs par defaut et petites grilles d'hyperparametres
+config.py              Valeurs par défaut et petites grilles d'hyperparamètres
 datasets/              Chargement CIFAR-100 et augmentations
 distillation/          Pertes KD, DKD, AT, FitNet et hooks de features
-models/                ResNet-18 et ResNet-50 adaptes aux images CIFAR 32x32
-scripts/               Entrainements, grid search, recherches Optuna, resumes
-utils/                 Checkpoints, metriques, Mixup, CutMix et boucles communes
-Report/                Rapport final anonymise du projet
+models/                ResNet-18 et ResNet-50 adaptés aux images CIFAR 32x32
+scripts/               Entraînements, grid search, recherches Optuna, résumés
+utils/                 Checkpoints, métriques, Mixup, CutMix et boucles communes
+Report/                Rapport final anonymisé du projet
 environment.yml        Environnement Conda minimal
-requirements.txt       Dependances pip principales
+requirements.txt       Dépendances pip principales
 ```
 
-Les dossiers generes localement ne doivent pas etre commit :
+Les dossiers générés localement ne doivent pas être versionnés :
 
 ```text
-data/       Dataset CIFAR-100 telecharge par torchvision
-save/       Checkpoints, histories, summaries, courbes, resultats de recherche
+data/       Dataset CIFAR-100 téléchargé par torchvision
+save/       Checkpoints, histories, summaries, courbes, résultats de recherche
 wandb/      Logs locaux Weights & Biases
 __pycache__/ Caches Python
 ```
 
-Le rapport inhérent à ce projet se trouve danbs le dossier:
+Le rapport anonymisé du projet se trouve dans le dossier :
 
 ```text
-Report/Rapport.pdf
+Report/Rapport_anonymise.pdf
 ```
 
 
@@ -53,54 +53,54 @@ conda env create -f environment.yml
 conda activate distill_resnet
 ```
 
-Pour CUDA, adaptez l'installation de PyTorch a votre GPU si necessaire. Le
+Pour CUDA, adaptez l'installation de PyTorch à votre GPU si nécessaire. Le
 fichier `environment.yml` cible une installation Conda avec `pytorch-cuda`.
 
-## Donnees Et Sorties
+## Données et sorties
 
-CIFAR-100 est telecharge automatiquement au premier lancement dans `data/`.
+CIFAR-100 est téléchargé automatiquement au premier lancement dans `data/`.
 Les sorties suivent cette convention :
 
 ```text
 save/<type_experience>/<modele>/<nom_experience>/
 ```
 
-Chaque experience peut produire :
+Chaque expérience peut produire :
 
 ```text
 checkpoint.pth              Dernier checkpoint
 best.pth                    Meilleur checkpoint
 history.json                Historique des pertes et accuracies
-summary.json                Resume final
-progress.json               Etat courant ou terminal
-run_config.json             Configuration de l'execution
+summary.json                Résumé final
+progress.json               État courant ou terminal
+run_config.json             Configuration de l'exécution
 loss_curve.png              Courbe de loss
 accuracy_curve.png          Courbe d'accuracy
 confusion_matrix.pt         Matrice de confusion
 roc_metrics.json            AUC micro/macro
 roc_curve_micro_macro.png   Courbe ROC
-class_metrics.json          Metriques par classe
-test_metrics.json           Metriques test globales
+class_metrics.json          Métriques par classe
+test_metrics.json           Métriques test globales
 ```
 
-## Utilisation Generale
+## Utilisation générale
 
-Toutes les commandes doivent etre lancees depuis la racine du projet avec
+Toutes les commandes doivent être lancées depuis la racine du projet avec
 `python -m ...`.
 
-Selection GPU :
+Sélection GPU :
 
 ```bash
 --gpu 0
 ```
 
 Mode avec validation : ne pas passer `--full_train`. Les scripts utilisent alors
-45000 images train, 5000 validation et 10000 test.
+45 000 images train, 5 000 validation et 10 000 test.
 
-Mode final : passer `--full_train`. Les scripts utilisent alors les 50000 images
-train et evaluent sur le test set.
+Mode final : passer `--full_train`. Les scripts utilisent alors les 50 000 images
+train et évaluent sur le test set.
 
-Weights & Biases est optionnel. Pour desactiver W&B, retirez `--use_wandb` ou
+Weights & Biases est optionnel. Pour désactiver W&B, retirez `--use_wandb` ou
 utilisez :
 
 ```bash
@@ -113,12 +113,16 @@ Pour activer W&B :
 wandb login
 ```
 
-## Ordre Recommande Des Experiences
+Lorsque l'argument `--wandb_entity` est présent, remplacez `votre-entite-wandb`
+par votre propre entité Weights & Biases, ou retirez l'argument si vous utilisez
+l'entité par défaut de votre compte.
 
-1. Rechercher les hyperparametres du teacher.
-2. Entrainer le teacher final ResNet-50.
-3. Rechercher puis entrainer le student baseline ResNet-18.
-4. Rechercher puis entrainer KD, AT, FitNet et DKD en utilisant le checkpoint teacher.
+## Ordre recommandé des expériences
+
+1. Rechercher les hyperparamètres du teacher.
+2. Entraîner le teacher final ResNet-50.
+3. Rechercher puis entraîner le student baseline ResNet-18.
+4. Rechercher puis entraîner KD, AT, FitNet et DKD en utilisant le checkpoint teacher.
 5. Comparer les checkpoints finaux.
 
 Le checkpoint teacher attendu par les scripts de distillation est :
@@ -159,7 +163,7 @@ python -m scripts.search_teacher_optuna \
   --campaign_id v1
 ```
 
-## Entrainement Teacher Final
+## Entraînement teacher final
 
 Commande finale issue de la meilleure recherche Optuna :
 
@@ -192,7 +196,7 @@ Sortie principale :
 save/teacher/resnet50_cifar/teacher_final_optuna_best/best.pth
 ```
 
-## Recherche Student Baseline
+## Recherche student baseline
 
 Grid search rapide du student :
 
@@ -226,7 +230,7 @@ python -m scripts.search_student_optuna \
   --campaign_id v1
 ```
 
-## Entrainement Student Baseline Final
+## Entraînement student baseline final
 
 ```bash
 python -m scripts.train_student \
@@ -295,7 +299,7 @@ python -m scripts.search_kd_optuna \
   --campaign_id v1
 ```
 
-## Entrainement KD Final
+## Entraînement KD final
 
 ```bash
 python -m scripts.train_kd \
@@ -367,7 +371,7 @@ python -m scripts.search_at_optuna \
   --campaign_id v1
 ```
 
-## Entrainement AT Final
+## Entraînement AT final
 
 ```bash
 python -m scripts.train_at \
@@ -420,7 +424,7 @@ python -m scripts.search_fitnet_grid \
   --grid_preset quick \
   --use_wandb \
   --wandb_project distill_cifar100 \
-  --wandb_entity patriceblanchard-cnam \
+  --wandb_entity votre-entite-wandb \
   --wandb_tags fitnet,search,grid,cifar100 \
   --wandb_mode online
 ```
@@ -442,16 +446,16 @@ python -m scripts.search_fitnet_optuna \
   --search_preset quick \
   --use_wandb \
   --wandb_project distill_cifar100 \
-  --wandb_entity patriceblanchard-cnam \
+  --wandb_entity votre-entite-wandb \
   --wandb_tags fitnet,search,optuna,cifar100 \
   --wandb_mode online
 ```
 
-## Entrainement FitNet Final
+## Entraînement FitNet final
 
 FitNet utilise deux phases :
 
-- `hint_epochs` : apprentissage du regresseur de features.
+- `hint_epochs` : apprentissage du régresseur de features.
 - `stage2_epochs` : distillation finale KD sur les logits.
 
 ```bash
@@ -477,7 +481,7 @@ python -m scripts.train_fitnet \
   --cutmix_alpha 1.0 \
   --use_wandb \
   --wandb_project distill_cifar100 \
-  --wandb_entity patriceblanchard-cnam \
+  --wandb_entity votre-entite-wandb \
   --wandb_tags fitnet,final,fulltrain,paper,cifar100 \
   --wandb_mode online \
   --wandb_group fitnet/resnet18_cifar/final \
@@ -508,7 +512,7 @@ python -m scripts.search_dkd_grid \
   --grid_preset quick \
   --use_wandb \
   --wandb_project distill_cifar100 \
-  --wandb_entity patriceblanchard-cnam \
+  --wandb_entity votre-entite-wandb \
   --wandb_tags dkd,search,grid,cifar100 \
   --wandb_mode online
 ```
@@ -529,12 +533,12 @@ python -m scripts.search_dkd_optuna \
   --search_preset quick \
   --use_wandb \
   --wandb_project distill_cifar100 \
-  --wandb_entity patriceblanchard-cnam \
+  --wandb_entity votre-entite-wandb \
   --wandb_tags dkd,search,optuna,cifar100 \
   --wandb_mode online
 ```
 
-## Entrainement DKD Final
+## Entraînement DKD final
 
 ```bash
 python -m scripts.train_dkd \
@@ -557,7 +561,7 @@ python -m scripts.train_dkd \
   --cutmix_alpha 1.0 \
   --use_wandb \
   --wandb_project distill_cifar100 \
-  --wandb_entity patriceblanchard-cnam \
+  --wandb_entity votre-entite-wandb \
   --wandb_tags dkd,final,fulltrain,optuna,cifar100 \
   --wandb_mode online \
   --wandb_group dkd/resnet18_cifar/final \
@@ -571,9 +575,9 @@ Sortie principale :
 save/dkd_final/resnet18_cifar/dkd_final_optuna_best_fulltrain/best.pth
 ```
 
-## Reprise D'entrainement
+## Reprise d'entraînement
 
-Les scripts d'entrainement acceptent `--resume` :
+Les scripts d'entraînement acceptent `--resume` :
 
 ```bash
 python -m scripts.train_kd \
@@ -581,13 +585,13 @@ python -m scripts.train_kd \
   --resume save/kd/resnet18_cifar/kd_final_best/checkpoint.pth
 ```
 
-Conservez les autres arguments identiques a l'execution initiale pour eviter de
-melanger plusieurs configurations dans un meme dossier.
+Conservez les autres arguments identiques à l'exécution initiale pour éviter de
+mélanger plusieurs configurations dans un même dossier.
 
-## Evaluation Et Comparaison
+## Évaluation et comparaison
 
-Les entrainements finaux evaluent le test set sauf si `--skip_test_metrics` est
-utilise. Pour comparer le nombre de parametres, la taille theorique des poids
+Les entraînements finaux évaluent le test set sauf si `--skip_test_metrics` est
+utilisé. Pour comparer le nombre de paramètres, la taille théorique des poids
 en float32 et la taille des fichiers checkpoint :
 
 ```bash
@@ -605,13 +609,13 @@ save/fitnet_final/resnet18_cifar/fitnet_final_best_fulltrain/best.pth
 save/dkd_final/resnet18_cifar/dkd_final_optuna_best_fulltrain/best.pth
 ```
 
-La colonne `Weights f32 (MB)` correspond a la comparaison de compacite du
-rapport. La colonne `Checkpoint (MiB)` correspond au fichier sauvegarde sur
-disque, qui peut etre plus gros car il contient aussi des informations de run.
+La colonne `Weights f32 (MB)` correspond à la comparaison de compacité du
+rapport. La colonne `Checkpoint (MiB)` correspond au fichier sauvegardé sur
+disque, qui peut être plus gros car il contient aussi des informations de run.
 
-## Commandes De Debug Rapides
+## Commandes de debug rapides
 
-Lancer une experience courte sans W&B :
+Lancer une expérience courte sans W&B :
 
 ```bash
 python -m scripts.train_student \
@@ -638,19 +642,19 @@ python -m scripts.search_kd_grid \
   --wandb_mode disabled
 ```
 
-## Reproductibilite
+## Reproductibilité
 
-- Le seed par defaut est defini dans `config.py`.
-- `--benchmark` active cuDNN benchmark pour accelerer l'entrainement, avec une
-  reproductibilite moins stricte.
+- Le seed par défaut est défini dans `config.py`.
+- `--benchmark` active cuDNN benchmark pour accélérer l'entraînement, avec une
+  reproductibilité moins stricte.
 - `--allow_tf32` active TF32 sur les GPU NVIDIA compatibles.
-- `--full_train` supprime la validation et entraine sur les 50000 images train.
+- `--full_train` supprime la validation et entraîne sur les 50 000 images train.
 - Les recherches utilisent le split train/validation standard du projet.
 
-## Journal Des Commandes Historiques
+## Journal des commandes historiques
 
-Les commandes utilisees pour construire les experiences originales sont
-conservees localement dans :
+Les commandes utilisées pour construire les expériences originales sont
+conservées localement dans :
 
 ```text
 save/grid_search_teacher.txt
