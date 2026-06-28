@@ -1,0 +1,37 @@
+# Python caches and local tooling
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.Rhistory
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# Data, checkpoints and experiment outputs
+data/
+save/
+wandb/
+*.pth
+*.pt
+*.ckpt
+*.onnx
+
+# Private report source/output with personal identifiers.
+Report/Rapport.pdf
+Report/Rapport_anonymise_compressed.pdf
+
+# Generated plots and metrics outside save/
+*.log
+debug-cli.*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*~
